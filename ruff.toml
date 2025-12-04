@@ -1,0 +1,47 @@
+# ===========================
+# Ruff configuration
+# ===========================
+
+# Global formatting defaults (Black-compatible style, but with tabs)
+line-length = 88
+indent-width = 4  # tab width for visual alignment
+
+# Paths to exclude from linting/formatting
+extend-exclude = [
+	"tests/data",
+]
+
+[format]
+# Use double quotes by default
+quote-style = "double"
+
+# 4-space indentation
+indent-style = "space"
+
+# Format code snippets inside docstrings
+docstring-code-format = true
+
+# Keep Black-style trailing commas
+skip-magic-trailing-comma = false
+
+[lint]
+# Enabled rule sets
+select = [
+	"F",   # Pyflakes (logic errors)
+	"E",   # pycodestyle errors
+	"W",   # pycodestyle warnings
+	"I",   # isort (import sorting)
+	"N",   # pep8-naming
+	"UP",  # pyupgrade (modern Python patterns)
+	"B",   # flake8-bugbear (bug-prone patterns)
+	"A",   # flake8-builtins
+	"C4",  # flake8-comprehensions
+	"ICN", # flake8-import-conventions
+	"FA",  # flake8-future-annotations
+	"T20", # flake8-print (forbid print)
+]
+
+# Let the formatter handle long lines instead of linting them
+ignore = [
+	"E501",
+]
