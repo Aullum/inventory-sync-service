@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import final
 
@@ -17,18 +19,27 @@ class InventoryKey:
 
 
 @final
-@dataclass
+@dataclass(slots=True)
 class InventoryItem:
     key: InventoryKey
     quantity: int
 
     @property
-    def product_id(self) -> str:
+    def product_id(self):
         return self.key.product_id
 
     @property
-    def condition(self) -> str:
+    def condition(self):
         return self.key.condition
+
+    @classmethod
+    def create_invemtory_item(
+        cls, product_id: str, condition: str, quantity: int
+    ) -> InventoryItem:
+        return InventoryItem(
+            key=InventoryKey(product_id=product_id, condition=condition),
+            quantity=quantity,
+        )
 
     def __post_init__(self) -> None:
         if self.quantity < 0:
@@ -38,10 +49,3 @@ class InventoryItem:
         if amount < 0:
             raise ValueError("amount must be >= 0")
         self.quantity += amount
-
-    def decrease(self, amount) -> None:
-        if amount < 0:
-            raise ValueError("amount must be >= 0")
-        if amount > self.quantity:
-            raise ValueError("not enough stock")
-        self.quantity -= amount
