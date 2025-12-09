@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import ItemsView, Mapping
 from dataclasses import dataclass
 from typing import final
 
@@ -7,6 +8,8 @@ from typing import final
 @final
 @dataclass(frozen=True, slots=True)
 class InventoryKey:
+    """Represents a unique warehouse grouping key."""
+
     condition_id: str
 
     def __post_init__(self) -> None:
@@ -16,6 +19,14 @@ class InventoryKey:
 
 @dataclass(slots=True)
 class InventoryItem:
+    """
+    Represents a single warehouse item.
+
+    Invariants:
+    - quantity must be >= 0
+    - condition_id must not be empty (delegated to InventoryKey)
+    """
+
     _key: InventoryKey
     _quantity: int
 
@@ -46,3 +57,33 @@ class InventoryItem:
         if amount < 0:
             raise ValueError("amount must be >= 0")
         self._quantity += amount
+
+
+@dataclass(frozen=True, slots=True)
+class InventorySnapshot:
+    """
+    Aggregated, read-only view of warehouse inventory.
+
+    Snapshot is immutable and protects internal structure
+    from external mutation.
+    """
+
+    _items: Mapping[InventoryKey, InventoryItem]
+
+    @classmethod
+    def from_items(
+        cls,
+        items: dict[InventoryKey, InventoryItem],
+    ) -> InventorySnapshot:
+        """Creates a snapshot and protects internal state from external mutation."""
+        return cls(_items=dict(items))
+
+    def get_qty(self, key: InventoryKey) -> int | None:
+        item = self._items.get(key)
+        if item is None:
+            return None
+        return item.quantity
+
+    def items(self) -> ItemsView[InventoryKey, InventoryItem]:
+        """Returns a read-only view over inventory items."""
+        return self._items.items()
