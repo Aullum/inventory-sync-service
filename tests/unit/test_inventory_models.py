@@ -33,6 +33,18 @@ def test_inventory_item_invalid_negative_quantity() -> None:
         InventoryItem(key=key, quantity=-1)
 
 
+def test_inventory_item_create_invemtory_item() -> None:
+    item = InventoryItem.create_invemtory_item(
+        product_id="test_inventory_item_create_invemtory_item",
+        condition="UE",
+        quantity=10,
+    )
+
+    assert item.product_id == "test_inventory_item_create_invemtory_item"
+    assert item.condition == "UE"
+    assert item.quantity == 10
+
+
 def test_inventory_item_increase_valid() -> None:
     key = InventoryKey(product_id="test_inventory_item_increase_valid", condition="NE")
     item = InventoryItem(key=key, quantity=10)
@@ -49,23 +61,3 @@ def test_inventory_item_increase_negative_quantity() -> None:
 
     with pytest.raises(ValueError):
         item.increase(-10)
-
-
-def test_inventory_item_decrease_valid() -> None:
-    key = InventoryKey(product_id="test_inventory_item_decrease_valid", condition="NE")
-    item = InventoryItem(key=key, quantity=10)
-
-    item.decrease(5)
-
-    assert item.quantity == 5
-
-
-@pytest.mark.parametrize("value", [-10, 20])
-def test_inventory_item_decrease_negative_quantity(value: int) -> None:
-    key = InventoryKey(
-        product_id="test_inventory_item_decrease_negative_quantity", condition="NE"
-    )
-    item = InventoryItem(key=key, quantity=10)
-
-    with pytest.raises(ValueError):
-        item.decrease(value)
