@@ -14,7 +14,6 @@ class InventoryKey:
             raise ValueError("condition_id must not be empty")
 
 
-@final
 @dataclass(slots=True)
 class InventoryItem:
     _key: InventoryKey
