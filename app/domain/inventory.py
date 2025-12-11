@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from collections.abc import ItemsView, Mapping
 from dataclasses import dataclass
-from typing import final
 
 
-@final
 @dataclass(frozen=True, slots=True)
 class InventoryKey:
     """Represents a unique warehouse grouping key."""
