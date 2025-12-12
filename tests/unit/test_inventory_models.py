@@ -83,7 +83,7 @@ class TestInventorySnapshot:
 
         snapshot = InventorySnapshot.from_items(items)
 
-        assert snapshot.get_qty(missing_key) is None
+        assert snapshot.get_qty(missing_key) == 0
 
     def test_snapshot_does_not_expose_internal_mapping_for_mutation(self) -> None:
         key1 = InventoryKey(
@@ -108,7 +108,7 @@ class TestInventorySnapshot:
         )
 
         assert snapshot.get_qty(key1) == 10
-        assert snapshot.get_qty(key2) is None
+        assert snapshot.get_qty(key2) == 0
 
     def test_items_returns_items_view_and_is_iterable(self) -> None:
         key1 = InventoryKey(
