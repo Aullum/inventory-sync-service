@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class MarketplaceConfig:
-    """Configuration and sync policy for a marketplace account."""
+    """Immutable configuration and sync policy limits for a marketplace account."""
 
     marketplace: str
     account: str
@@ -14,7 +14,7 @@ class MarketplaceConfig:
     client_id: str | None = None
     client_secret: str | None = None
 
-    # Sync policy limits
+    # Sync policy thresholds (qty caps and min-diff to trigger sync)
     limit_qty_for_sync_in_marketplace: int = 9999
     limit_qty_for_sync_in_warehouse: int = 9999
     limit_qty_difference_for_sync: int = 0
@@ -45,7 +45,7 @@ class MarketplaceConfig:
 
 @dataclass(frozen=True, slots=True)
 class Listing:
-    """Marketplace listing entity used for synchronization."""
+    """Immutable representation of a marketplace listing used for sync decisions."""
 
     sku: str
     condition_id: str
@@ -66,14 +66,14 @@ class Listing:
 
 @dataclass(frozen=True, slots=True)
 class ListingQuantityUpdate:
-    """Represents a quantity update command for a marketplace listing."""
+    """Command to update a listing quantity on the marketplace."""
 
     sku: str
-    listing_id: str
     qty: int
+    listing_id: str | None = None
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass
 class MarketplacePolicy:
     """
     Domain service responsible for evaluating sync decisions
@@ -84,9 +84,15 @@ class MarketplacePolicy:
 
     def should_sync(self, listing: Listing, warehouse_qty: int) -> bool:
         """
-        Determines whether a listing should be synchronized
-        based on warehouse quantity and marketplace rules.
+        Determines whether a listing should be synchronized.
+
+        A synchronization is skipped if:
+        - warehouse quantity is negative,
+        - quantities exceed configured thresholds,
+        - the difference between warehouse and marketplace quantities
+          is below the configured minimum (including exact equality).
         """
+
         if warehouse_qty < 0:
             return False
 
@@ -94,6 +100,9 @@ class MarketplacePolicy:
             return False
 
         if listing.marketplace_qty > self.config.limit_qty_for_sync_in_marketplace:
+            return False
+
+        if listing.marketplace_qty == warehouse_qty:
             return False
 
         diff = abs(warehouse_qty - listing.marketplace_qty)

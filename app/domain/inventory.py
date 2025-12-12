@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class InventoryKey:
-    """Represents a unique warehouse grouping key."""
+    """Represents a unique inventory grouping key (by condition_id)."""
 
     condition_id: str
 
@@ -18,7 +18,7 @@ class InventoryKey:
 @dataclass(slots=True)
 class InventoryItem:
     """
-    Represents a single warehouse item.
+    Represents a single warehouse item (mutable entity).
 
     Invariants:
     - quantity must be >= 0
@@ -52,6 +52,7 @@ class InventoryItem:
             raise ValueError("quantity must be >= 0")
 
     def increase(self, amount: int) -> None:
+        """Increases item quantity by a non-negative amount."""
         if amount < 0:
             raise ValueError("amount must be >= 0")
         self._quantity += amount
@@ -62,8 +63,8 @@ class InventorySnapshot:
     """
     Aggregated, read-only view of warehouse inventory.
 
-    Snapshot is immutable and protects internal structure
-    from external mutation.
+    The snapshot owns a copy of the mapping structure (dict),
+    but values (InventoryItem) are not deep-copied.
     """
 
     _items: Mapping[InventoryKey, InventoryItem]
@@ -73,15 +74,25 @@ class InventorySnapshot:
         cls,
         items: dict[InventoryKey, InventoryItem],
     ) -> InventorySnapshot:
-        """Creates a snapshot and protects internal state from external mutation."""
+        """Creates a snapshot with a copy of the given mapping."""
+
         return cls(_items=dict(items))
 
-    def get_qty(self, key: InventoryKey) -> int | None:
+    def get_qty(self, key: InventoryKey) -> int:
+        """
+        Returns warehouse quantity for the given key.
+
+        If the key is not present in the snapshot, returns 0.
+        This is an intentional design choice: absence of inventory
+        data is treated as zero available quantity.
+        """
+
         item = self._items.get(key)
         if item is None:
-            return None
+            return 0
         return item.quantity
 
     def items(self) -> ItemsView[InventoryKey, InventoryItem]:
-        """Returns a read-only view over inventory items."""
+        """Returns a live view of snapshot items."""
+
         return self._items.items()
