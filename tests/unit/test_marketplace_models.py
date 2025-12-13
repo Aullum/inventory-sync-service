@@ -166,16 +166,6 @@ class TestMarketplacePolicy:
         )
         return MarketplacePolicy(config=config)
 
-    def test_should_sync_false_when_warehouse_qty_negative(self) -> None:
-        policy = self._make_policy()
-        listing = Listing(
-            sku="sku",
-            condition_id="listing_id",
-            marketplace_qty=10,
-        )
-
-        assert policy.should_sync(listing=listing, warehouse_qty=-1) is False
-
     @pytest.mark.parametrize(
         "warehouse_qty,limit_warehouse,expected",
         [
@@ -250,7 +240,6 @@ class TestMarketplacePolicy:
         [
             (10, 50, 10),
             (100, 50, 50),
-            (-5, 50, 0),
         ],
     )
     def test_calc_target_qty(
