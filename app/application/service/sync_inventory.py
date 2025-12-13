@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from app.application.ports.marketplaces import MarketplacePort
 from app.domain.inventory import InventoryKey, InventorySnapshot
 from app.domain.marketplace import ListingQuantityUpdate, MarketplacePolicy
 
 
+@dataclass
 class SyncInventoryService:
     """Application service that orchestrates inventory synchronization."""
 
@@ -26,9 +29,6 @@ class SyncInventoryService:
         updates: list[ListingQuantityUpdate] = []
 
         for listing in listings:
-            if listing.condition_id is None or listing.marketplace_qty is None:
-                continue
-
             key = InventoryKey(condition_id=listing.condition_id)
             warehouse_qty = inventory.get_qty(key)
 
