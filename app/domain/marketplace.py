@@ -119,7 +119,4 @@ class MarketplacePolicy:
         if warehouse_qty > self.config.limit_qty_for_marketplace:
             return self.config.limit_qty_for_marketplace
 
-        if warehouse_qty < 0:
-            return 0
-
         return warehouse_qty

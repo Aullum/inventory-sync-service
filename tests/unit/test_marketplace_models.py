@@ -250,7 +250,6 @@ class TestMarketplacePolicy:
         [
             (10, 50, 10),
             (100, 50, 50),
-            (-5, 50, 0),
         ],
     )
     def test_calc_target_qty(
