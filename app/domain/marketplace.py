@@ -93,13 +93,10 @@ class MarketplacePolicy:
           is below the configured minimum (including exact equality).
         """
 
-        if warehouse_qty < 0:
+        if listing.marketplace_qty > self.config.limit_qty_for_sync_in_marketplace:
             return False
 
         if warehouse_qty > self.config.limit_qty_for_sync_in_warehouse:
-            return False
-
-        if listing.marketplace_qty > self.config.limit_qty_for_sync_in_marketplace:
             return False
 
         if listing.marketplace_qty == warehouse_qty:
