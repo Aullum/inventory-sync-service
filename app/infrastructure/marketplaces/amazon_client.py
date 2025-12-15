@@ -15,7 +15,7 @@ class AmazonMapper:
 
 
 @dataclass(slots=True, frozen=True)
-class AmazonCredentials:
+class AmazonUserCredentials:
     seller_partner_id: str
     lwa_client_id: str
     lwa_client_secret: str
@@ -43,8 +43,8 @@ class AmazonAdapter:
     """
 
     http: httpx.AsyncClient
-    credentials: AmazonCredentials
-    mapper: AmazonMapper
+    credentials: AmazonUserCredentials
+    base_url: str
 
     async def fetch_listings(self) -> list[Listing]:
         """

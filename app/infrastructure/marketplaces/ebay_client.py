@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import httpx
 
 from app.domain.marketplace import Listing, ListingQuantityUpdate
+from app.infrastructure.config import EbayDeveloperCredentials
 
 
 class EbayMapper:
@@ -15,7 +16,7 @@ class EbayMapper:
 
 
 @dataclass(frozen=True, slots=True)
-class EbayConfig:
+class EbayUserCredentials:
     token: str
 
     def __post_init__(self) -> None:
@@ -31,8 +32,9 @@ class EbayAdapter:
     """
 
     http: httpx.AsyncClient
-    credentials: EbayConfig
-    mapper: EbayMapper
+    credentials: EbayUserCredentials
+    dev_creds: EbayDeveloperCredentials
+    base_url: str
 
     async def fetch_listings(self) -> list[Listing]:
         """
