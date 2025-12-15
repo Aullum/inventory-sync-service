@@ -2,16 +2,21 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.application.ports.marketplaces import MarketplacePort
+from app.application.ports.marketplaces import MarketplacePortFactory
 from app.domain.inventory import InventoryKey, InventorySnapshot
-from app.domain.marketplace import ListingQuantityUpdate, MarketplacePolicy
+from app.domain.marketplace import (
+    ListingQuantityUpdate,
+    MarketplaceConfig,
+    MarketplacePolicy,
+)
 
 
 @dataclass
 class SyncInventoryService:
     """Application service that orchestrates inventory synchronization."""
 
-    marketplace_port: MarketplacePort
+    marketplace_factory: MarketplacePortFactory
+    config: MarketplaceConfig
     policy: MarketplacePolicy
 
     async def sync(
@@ -24,7 +29,9 @@ class SyncInventoryService:
         Returns a list of updates that were sent to the marketplace.
         """
 
-        listings = await self.marketplace_port.fetch_listings()
+        marketplace = self.marketplace_factory.build(self.config)
+
+        listings = await marketplace.fetch_listings()
 
         updates: list[ListingQuantityUpdate] = []
 
@@ -49,6 +56,6 @@ class SyncInventoryService:
             )
 
         if updates:
-            await self.marketplace_port.update_inventory(updates=updates)
+            await marketplace.update_inventory(updates=updates)
 
         return updates
