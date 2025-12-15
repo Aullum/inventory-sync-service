@@ -1,6 +1,6 @@
 import pytest
 
-from app.infrastructure.marketplaces.amazon_client import AmazonCredentials
+from app.infrastructure.marketplaces.amazon_client import AmazonUserCredentials
 
 
 class TestInfraAmazonCredentials:
@@ -24,11 +24,11 @@ class TestInfraAmazonCredentials:
         kwargs[field] = value
 
         with pytest.raises(ValueError):
-            AmazonCredentials(**kwargs)
+            AmazonUserCredentials(**kwargs)
 
     @staticmethod
     def test_amazon_credentials_ok():
-        creds = AmazonCredentials(
+        creds = AmazonUserCredentials(
             seller_partner_id="seller",
             lwa_client_id="client",
             lwa_client_secret="secret",
