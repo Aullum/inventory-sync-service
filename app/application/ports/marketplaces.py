@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Protocol
 
-from app.domain.marketplace import Listing, ListingQuantityUpdate
+from app.domain.marketplace import Listing, ListingQuantityUpdate, MarketplaceConfig
 
 
 class MarketplacePort(Protocol):
@@ -19,3 +19,9 @@ class MarketplacePort(Protocol):
     ) -> None:
         """Applies quantity updates for marketplace listings."""
         ...
+
+
+class MarketplacePortFactory(Protocol):
+    """Factory that builds a request-scoped MarketplacePort from MarketplaceConfig."""
+
+    def build(self, config: MarketplaceConfig) -> MarketplacePort: ...
