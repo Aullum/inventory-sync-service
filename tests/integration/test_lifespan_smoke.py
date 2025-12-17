@@ -12,3 +12,4 @@ def test_lifespan_smoke_initializes_and_closes_http_client(monkeypatch):
         assert hasattr(app.state, "config")
         assert hasattr(app.state, "http")
         assert isinstance(app.state.http, httpx.AsyncClient)
+        assert hasattr(app.state, "marketplace_factory")
