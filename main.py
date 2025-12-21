@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.api import inventory_router
 from app.infrastructure.config import load_config
 from app.infrastructure.http.client import build_httpx_client
 from app.infrastructure.marketplaces.factory import MarketplaceAdapterFactory
@@ -24,3 +25,5 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.include_router(inventory_router)
